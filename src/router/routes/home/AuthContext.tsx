@@ -1,15 +1,22 @@
 import { Session, User } from "@supabase/supabase-js";
 import { createContext, useState, useEffect, FC, useContext, ReactComponentElement } from "react";
+import supapabase from "../../../supabase";
 
 
 
 type context = {
     session?: Session | null
     user?: User | null,
-    setSession?:(session:Session)=>void,
-    setUser?:(user:User)=>void
+    setSession: (session: Session) => void,
+    setUser: (user: User) => void
 }
-const authContext = createContext<context>({ session: null, user: null,setSession:()=>{},setUser:()=>{}})
+const AuthContext = createContext<context | null>({
+    user: null, session: null, setSession(session) {
+
+    }, setUser(user) {
+
+    },
+})
 
 
 
@@ -17,19 +24,37 @@ const authContext = createContext<context>({ session: null, user: null,setSessio
 
 
 const ContextProvider = (props: any) => {
-    const useAuth = useContext(authContext)
+
     const [session, setSession] = useState<Session | null>()
     const [user, setUser] = useState<User | null>()
 
-    
-    return <authContext.Provider value={{setSession:(session:Session)=>setSession(session!),setUser:(user:User)=>setUser(user!)}}>
+
+
+    async function check_Session() {
+        const { data, error } = await supapabase.auth.getSession()
+        if (error) return;
+        setSession(data.session)
+        setUser(data.session?.user)
+    }
+    useEffect(() => {
+        check_Session()
+        console.log(user, session)
+    }, [])
+    return<AuthContext.Provider
+        value={{
+            session,
+            user,
+            setSession,
+            setUser,
+        }}
+    >
         {props.children!}
-    </authContext.Provider>
+    </AuthContext.Provider>
 }
 
 export { ContextProvider }
 
 
 export const useAuth = () => {
-    return useContext(authContext)
+    return useContext(AuthContext)
 }

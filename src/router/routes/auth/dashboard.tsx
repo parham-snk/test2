@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom"
 
 export default function Dashboard() {
     const navigate = useNavigate()
-    const { user, session ,setSession,setUser} = useAuth()
-    
+    const { user, session, setSession, setUser } = useAuth()!
+
     const action = async (prev: any, formData: FormData) => {
         const email = formData.get("email") as string
         const password = formData.get("password") as string
@@ -18,8 +18,9 @@ export default function Dashboard() {
             return "wrong"
         }
         if (data.user && data.session) {
-            setUser(data.user);
-            setSession(data.session)
+            setUser!(data.user);
+            setSession!(data.session)
+            navigate("/")
         }
 
         return "ok"
@@ -27,9 +28,9 @@ export default function Dashboard() {
     const [state, formAction, isPending] = useActionState(action, null)
 
 
-    useEffect(()=>{
-        if(session && user) navigate("/")
-    },[session,user])
+    console.log(user, session)
+    if (session && user) navigate("/")
+
     return (
         <div className="bg-zinc-900 w-screen h-screen text-white flex flex-col justify-center align-middle items-center">
             <h1 className="text-5xl font-bold select-none">MY MEMMO</h1>

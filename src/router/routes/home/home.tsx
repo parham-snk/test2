@@ -1,4 +1,4 @@
-import { useState, useCallback, useContext } from "react";
+import { useState, useCallback, useContext, useEffect } from "react";
 import {
     ReactFlow,
     Background,
@@ -9,6 +9,12 @@ import "@xyflow/react/dist/style.css";
 import { data, useNavigate } from "react-router-dom";
 import { Edge, MiniMap, Node } from "reactflow";
 import { useAuth } from "./AuthContext";
+
+
+import { IoMdExit } from "react-icons/io";
+
+
+
 
 const INIT_nodes = [
     {
@@ -34,8 +40,8 @@ const INIT_edges: Edge[] = [
 
 export default function Home() {
 
-    const { user, session } = useAuth()
-    console.log(user,session)
+    let { user, session } = useAuth()!
+
     const navigate = useNavigate()
 
     const [nodes, setNodes] = useState(INIT_nodes);
@@ -52,9 +58,14 @@ export default function Home() {
     );
 
 
-    if (!user || !session)  navigate("/dashboard");
+
+
     return (
         <div style={{ width: "100vw", height: "100vh" }} className="bg-zinc-800">
+            <div className="fixed p-auto left-4 top-4 bg-white bg-opacity-5 backdrop-blur-sm z-50 rounded-xl flex flex-col justify-center align-baseline ">
+                <IoMdExit />
+            </div>
+
             <ReactFlow
                 nodes={nodes}
 
@@ -66,6 +77,7 @@ export default function Home() {
                 <Background color="white" bgColor="zinc" />
                 <Controls />
             </ReactFlow>
+
         </div>
     );
 }
