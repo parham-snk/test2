@@ -28,7 +28,7 @@ export default function Dashboard() {
     const [state, formAction, isPending] = useActionState(action, null)
 
 
-    console.log(user, session)
+
     if (session && user) navigate("/")
 
     return (
