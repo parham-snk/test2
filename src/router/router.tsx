@@ -5,8 +5,8 @@ import Dashboard from "./routes/auth/dashboard";
 export default function Router(){
 
     return(
-        <BrowserRouter>
-            <Routes>
+        <BrowserRouter basename="react-supa">
+            <Routes >
                     <Route path="/" Component={Home}/>
                     <Route path="/dashboard" Component={Dashboard}/>
             </Routes>
