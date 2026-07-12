@@ -205,9 +205,7 @@ export default function Home() {
             >
                 <Background color="white" bgColor="zinc" />
                 <Controls />
-                <Panel position="top-left">
-                    <h1>My Flow</h1>
-                </Panel>
+
             </ReactFlow>
 
         </div>

@@ -32,9 +32,9 @@ const ADD_NODE_MODAL: FC<modal> = ({ notify, data }) => {
         }
 
         async function updateRow() {
-            const {error}=await supapabase.from("nodes").update({id,label,posx,posy}).eq("id",id)
-            if(error) return notify("error", "error");
-            notify("node updated!","success")
+            const { error } = await supapabase.from("nodes").update({ id, label, posx, posy }).eq("id", id)
+            if (error) return notify("error", "error");
+            notify("node updated!", "success")
         }
 
         actionType ? updateRow() : InsertRow()
@@ -47,8 +47,16 @@ const ADD_NODE_MODAL: FC<modal> = ({ notify, data }) => {
     const [label, setLabel] = useState(node?.data.label || "")
     const [posx, setPosX] = useState(node?.position.x || "")
     const [posy, setPosY] = useState(node?.position.y || "")
+
+
+
+    async function deleteNode() {
+        const {error}=await supapabase.rpc("delete_node",{node_id:node?.id})
+        if(error) return notify("error","error");
+        notify("node deleted!","success")
+    }
     return (
-        <div className="bg-zinc-900 bg-opacity-70 backdrop-blur rounded shadow absolute w-80 h-96  left-16 top-10 z-20 ">
+        <div className="bg-zinc-900 bg-opacity-70 backdrop-blur rounded shadow-xl absolute w-80 h-96  left-16 top-10 z-20">
             {
                 isPending &&
                 <div className="w-full h-full bg-zinc-900 bg-opacity-80 backdrop-blur  z-50 absolute
@@ -97,7 +105,17 @@ const ADD_NODE_MODAL: FC<modal> = ({ notify, data }) => {
                         />
                     </div>
                 </div>
-                <button type="submit" className="bg-white text-black rounded bottom-0 p-1 mt-24">create</button>
+                {
+                    actionType &&
+                    <> <input onClick={deleteNode} type="button" className="text-red-500 border border-red-500 rounded hover:bg-red-500 hover:text-black transition-all cursor-pointer
+                mt-16 p-1
+                " value={"delete node"} />
+                        <button type="submit" className="bg-white text-black rounded bottom-0 p-1 mt-2">create</button></>
+                }
+                {
+                    !actionType &&
+                    <button type="submit" className="bg-white text-black rounded bottom-0 p-1 mt-24">create</button>
+                }
             </form>
         </div>
     )
