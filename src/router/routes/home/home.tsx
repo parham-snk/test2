@@ -8,7 +8,7 @@ import {
     addEdge
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { data, useNavigate } from "react-router-dom";
+import { data, Link, useNavigate } from "react-router-dom";
 import { Edge, MiniMap, Node } from "reactflow";
 import { useAuth } from "./AuthContext";
 
@@ -68,8 +68,9 @@ const notify = (msg: string, icon: "error" | "success") => {
 export default function Home() {
 
     let { user, session } = useAuth()!
-
     const navigate = useNavigate()
+
+    if (!session) navigate("/dashboard")
 
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState<Edge[]>([]);
@@ -132,7 +133,7 @@ export default function Home() {
     }
     async function getEdges() {
         const { data, error } = await supapabase.from("edges").select("*")
-        if (error) return notify("خطا در دریافت کانکشن ها!","error")
+        if (error) return notify("خطا در دریافت کانکشن ها!", "error")
         setEdges(data)
     }
 
@@ -140,11 +141,14 @@ export default function Home() {
         getNodes()
         getEdges()
     }, [])
+
     return (
         <div style={{ width: "100vw", height: "100vh" }} className="bg-zinc-800">
             <Toaster />
             <div className="fixed p-auto left-4 top-4 bg-white bg-opacity-5 backdrop-blur-sm z-50 rounded-xl flex flex-col justify-center align-baseline ">
-                <IoMdExit />
+                <Link to={'/dashboard'}>
+                    <IoMdExit />
+                </Link>
             </div>
 
             <ReactFlow

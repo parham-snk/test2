@@ -5,7 +5,7 @@ import Dashboard from "./routes/auth/dashboard";
 export default function Router(){
 
     return(
-        <BrowserRouter basename="/test2">
+        <BrowserRouter >
             <Routes >
                     <Route path="/" Component={Home}/>
                     <Route path="/dashboard" Component={Dashboard}/>
