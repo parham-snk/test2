@@ -137,6 +137,8 @@ export default function Home() {
         setEdges(data)
     }
 
+
+
     useEffect(() => {
         getNodes()
         getEdges()
