@@ -18,6 +18,7 @@ import { IoMdExit } from "react-icons/io";
 import supapabase from "../../../supabase";
 import toast, { Toaster } from "react-hot-toast";
 import ADD_NODE_MODAL from "./modals/add-node-modal";
+import Edge_Modal from "./modals/edge-modal";
 
 
 
@@ -27,6 +28,18 @@ type nodeType = {
     data: { label: string },
     type: "input" | "output"
 }
+
+type EdgeModal = {
+    edge: Edge,
+    position: {
+        clientX: number,
+        clientY: number
+    }
+
+}
+
+
+
 const INIT_nodes = [
     {
         id: "nodejs",
@@ -77,11 +90,14 @@ export default function Home() {
     const [showModal, setShowModal] = useState<boolean>(false)
     const [modalData, setModalData] = useState<nodeType | null>(null)
 
+    const [edgeModal, setEdgeModalShow] = useState<boolean>(false)
+    const [edgeModalData, setEdegeModalData] = useState<EdgeModal | null>(null)
+
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState<Edge[]>([]);
 
 
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+
 
     const onNodesChange = useCallback(
         async (changes: any) => {
@@ -179,9 +195,14 @@ export default function Home() {
                 }}
 
                 onNodeClick={(eve, node: nodeType) => {
-                    console.log(eve)
-                    setShowModal(true)
-                    setModalData(node)
+                    setShowModal(false)
+                    setTimeout(() => {
+                        setShowModal(true)
+
+                        setModalData(node)
+                    }, 100);
+
+
                 }}
 
                 onNodeDragStop={async (eve, node: nodeType) => {
@@ -201,6 +222,12 @@ export default function Home() {
 
                 }}
 
+                onEdgeClick={(eve, edge) => {
+                    const { clientX, clientY } = eve
+                    setEdegeModalData({ edge, position: { clientX, clientY } })
+                    setEdgeModalShow(true)
+
+                }}
                 fitView
             >
                 <Background color="white" bgColor="zinc" />
@@ -208,6 +235,19 @@ export default function Home() {
 
             </ReactFlow>
 
+            {
+                edgeModal &&
+                <Edge_Modal setShowModal={(state) => {
+                    setEdgeModalShow(state)
+                    setModalData(null)
+                }} edge={edgeModalData?.edge!} position={edgeModalData?.position!} notify={(msg, type) => {
+                    notify(msg, type)
+                    if (type == "success") {
+                        getEdges()
+                        setEdgeModalShow(false)
+                    }
+                }} />
+            }
         </div>
     );
 }
