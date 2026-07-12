@@ -7,7 +7,6 @@ export default function Dashboard() {
     const navigate = useNavigate()
     const { user, session, setSession, setUser } = useAuth()!
 
-    alert(session)
     if(session) navigate('/')
     const action = async (prev: any, formData: FormData) => {
         const email = formData.get("email") as string

@@ -5,17 +5,19 @@ import {
     Controls,
     applyEdgeChanges, applyNodeChanges,
     Connection,
-    addEdge
+    addEdge,
+    Panel
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { data, Link, useNavigate } from "react-router-dom";
 import { Edge, MiniMap, Node } from "reactflow";
 import { useAuth } from "./AuthContext";
 
-
+import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { IoMdExit } from "react-icons/io";
 import supapabase from "../../../supabase";
 import toast, { Toaster } from "react-hot-toast";
+import ADD_NODE_MODAL from "./modals/add-node-modal";
 
 
 
@@ -72,6 +74,9 @@ export default function Home() {
 
     if (!session) navigate("/dashboard")
 
+    const [showModal, setShowModal] = useState<boolean>(false)
+    const [modalData, setModalData] = useState<nodeType | null>(null)
+
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState<Edge[]>([]);
 
@@ -80,30 +85,9 @@ export default function Home() {
 
     const onNodesChange = useCallback(
         async (changes: any) => {
-            let timer;
-            const { id, data, position, type } = changes[0]! as Node
-            if (!position) return;
-
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-            let snapshot: any;
-
-            timerRef.current = setTimeout(async () => {
-                setNodes((nodesSnapshot) => {
-                    snapshot = nodesSnapshot;
-                    return applyNodeChanges(changes, nodesSnapshot)
-                })
-                const { error } = await supapabase.from("nodes").update({ id, label: data?.label, posx: Math.floor(position.x!).toFixed(0), posy: Math.floor(position.y!).toFixed(0), type }).eq("id", id)
-
-                changes as any
-                if (error) {
-                    notify("تغییرات nodeدر دیتابیس ثبت نشد!", "error")
-                    return setNodes(snapshot as never)
-                }
-
-                notify("!تغییرات ثبت شد", "success")
-            }, 100);
+            setNodes((nodesSnapshot) => {
+                return applyNodeChanges(changes, nodesSnapshot)
+            })
         },
         [],
     );
@@ -142,37 +126,88 @@ export default function Home() {
         getEdges()
     }, [])
 
+    useEffect(() => {
+        !showModal && setModalData(null)
+    }, [showModal])
     return (
         <div style={{ width: "100vw", height: "100vh" }} className="bg-zinc-800">
             <Toaster />
-            <div className="fixed p-auto left-4 top-4 bg-white bg-opacity-5 backdrop-blur-sm z-50 rounded-xl flex flex-col justify-center align-baseline ">
-                <Link to={'/dashboard'}>
-                    <IoMdExit />
-                </Link>
-            </div>
+            <div className="fixed p-auto left-3 top-4 bg-white text-black   z-50 flex flex-col justify-center align-baseline p-1 gap-2">
+                <div className="cursor-pointer transition-all relative" onClick={async () => {
+                    const { error } = await supapabase.auth.signOut()
+                    if (error) return notify("logout failed!", "error")
+                    navigate("/dashboard")
+                }}>
+                    <div className="rotate-180 hover:scale-110 ">
+                        <IoMdExit size={20} />
+                    </div>
+                </div>
+                {
+                    //add-node
+                }
+                <div className="cursor-pointer" onClick={() => {
+                    setShowModal(!showModal)
+                }}>
+                    <AiOutlineAppstoreAdd size={20} />
+                </div>
 
+            </div>
+            {
+                showModal &&
+                <ADD_NODE_MODAL notify={(msg, type: "success" | "error") => {
+                    if (type != "error") {
+                        setShowModal(false)
+                        setModalData(null)
+                        getNodes()
+                    }
+                    notify(msg, type)
+                }}
+                    data={modalData}
+                />
+            }
             <ReactFlow
                 nodes={nodes}
 
                 edges={edges}
                 onNodesChange={onNodesChange}
-                onEdgesChange={(changes) => {
-                    console.log(changes)
+                // onEdgesChange={(changes) => {
+                //     console.log(changes)
+                // }}
+
+                onNodeDoubleClick={() => {
+                    alert()
                 }}
 
+                onNodeClick={(eve, node: nodeType) => {
+                    console.log(eve)
+                    setShowModal(true)
+                    setModalData(node)
+                }}
+
+                onNodeDragStop={async (eve, node: nodeType) => {
+                    const roundNum = (num: number) => Number(num).toFixed(0)
+                    let obj = { id: node.id, posx: roundNum(node.position.x), posy: roundNum(node.position.y), type: node.type, label: node.data.label }
+                    const { error } = await supapabase.from("nodes").update({ ...obj }).eq("id", node.id)
+                    if (error) return notify("error", "error");
+                    notify('node changed!', "success")
+
+                }}
                 onConnect={async (connection: Connection) => {
                     let obj = { id: `${connection.source}-${connection.target}`.toString(), source: connection.source, target: connection.target }
-                    console.log(obj)
                     setEdges((eds) => addEdge(connection, eds));
                     const { error } = await supapabase.from("edges").insert(obj)
                     if (error) return notify("خطا در ثبت کانکشن", "error")
                     notify("کانکشن ایجاد شد!", "success")
-                    setEdges((edgesSnapshot) => applyEdgeChanges(obj as any, edgesSnapshot))
-                }}
-            >
 
+                }}
+
+                fitView
+            >
                 <Background color="white" bgColor="zinc" />
                 <Controls />
+                <Panel position="top-left">
+                    <h1>My Flow</h1>
+                </Panel>
             </ReactFlow>
 
         </div>
