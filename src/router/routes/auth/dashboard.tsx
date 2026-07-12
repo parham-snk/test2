@@ -35,7 +35,7 @@ export default function Dashboard() {
     return (
         <div className="bg-zinc-900 w-screen h-screen text-white flex flex-col justify-center align-middle items-center">
             <h1 className="text-5xl font-bold select-none">MY MEMMO</h1>
-            <form action={formAction} className=" h-auto border-white border-opacity-40 border rounded p-5 my-10 flex flex-col justify-start align-start" style={{ width: 400 }}>
+            <form action={formAction} style={{ width: 400 }} className=" h-auto border-white border-opacity-40 border rounded p-5 my-10 flex flex-col justify-start align-start sm:w-3/4" >
                 <h1 className="text-center text-3xl m-10 select-none">login</h1>
                 <label htmlFor="email" className="my-2">email : </label>
                 <input
