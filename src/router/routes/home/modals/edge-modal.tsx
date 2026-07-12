@@ -36,7 +36,14 @@ const Edge_Modal: FC<modal> = ({ edge, notify, position, setShowModal }) => {
         notify("edge updated","success")
     }
 
+    async function delete_edge(){
+        const {error}=await supapabase.from("edges").delete().eq("id",id)
+        if(error) return notify("error","error");
+        notify("edge deleted!","success")
+        setShowModal(false)
+    }
     const [state, formaction, isPending] = useFormState(FormAction, null)
+
     return <div className="fixed bg-zinc-900 bg-opacity-80 backdrop-blur rounded shadow-2xl w-80 py-2 h-96
 flex flex-col justify-start align-middle
 " style={{ left: position.clientX, top: position.clientY }}
@@ -45,7 +52,11 @@ flex flex-col justify-start align-middle
         <div className="p-2 absolute -top-10 bg-zinc-900 bg-opacity-80 backdrop-blur text-white cursor-pointer" onClick={() => setShowModal(false)}>
             <IoCloseSharp />
         </div>
-        <form action={formaction} className="w-full h-4/5 flex flex-col justify-start align-middle p-2 text-white overflow-y-scroll">
+        <form action={formaction} className="w-full h-full flex flex-col justify-start align-middle p-2 text-white overflow-y-scroll">
+        <div className="flex flex-row-reverse justify-between align-middle items-center gap-2 my-2 mb-4">
+            <button className="border border-blue-400 text-blue-400 hover:text-black hover:bg-blue-400 transition-all w-1/2 p-1 rounded">save!</button>
+            <div className="border text-red-600 border-red-600 hover:bg-red-600 hover:text-black transition-all w-1/2 text-center p-1 rounded cursor-pointer" onClick={delete_edge}>delete</div>
+        </div>
             <label htmlFor="id" className="my-1">id :</label>
             <input name="id" id="id" type="text" className="bg-transparent border border-white rounded p-1" value={id as string} />
             <label htmlFor="source" className="my-1">source (id) :</label>
@@ -70,7 +81,7 @@ flex flex-col justify-start align-middle
                 </div>
 
             </fieldset>
-            <button>save!</button>
+            
         </form>
     </div>
 }
