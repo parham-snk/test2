@@ -29,7 +29,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "bcssw": "npx tailwindcss -i ./src/index.css -o ./src/output.css --watch"
+    "bcssw": "npx tailwindcss -i ./src/index.css -o ./src/output.css --watch",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
