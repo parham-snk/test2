@@ -13,7 +13,7 @@ import { data, Link, useNavigate } from "react-router-dom";
 import { Edge, MiniMap, Node } from "reactflow";
 import { useAuth } from "./AuthContext";
 
-import { AiOutlineAppstoreAdd } from "react-icons/ai";
+import { AiOutlineAppstoreAdd, AiOutlineLoading } from "react-icons/ai";
 import { IoMdExit } from "react-icons/io";
 import supapabase from "../../../supabase";
 import toast, { Toaster } from "react-hot-toast";
@@ -97,7 +97,7 @@ export default function Home() {
     const [edges, setEdges] = useState<Edge[]>([]);
 
 
-
+    const [isloading, setIsLoading] = useState<boolean>(true)
 
     const onNodesChange = useCallback(
         async (changes: any) => {
@@ -129,7 +129,7 @@ export default function Home() {
         })
         setNodes(rows as any)
 
-
+        setIsLoading(false)
     }
     async function getEdges() {
         const { data, error } = await supapabase.from("edges").select("*")
@@ -149,6 +149,14 @@ export default function Home() {
     }, [showModal])
     return (
         <div style={{ width: "100vw", height: "100vh" }} className="bg-zinc-800">
+            {
+                //loading
+                isloading && (
+                    <div className="w-full h-full absolute bg-zinc-900 bg-opacity-80 backdrop-blur-sm z-50 text-white flex justify-center align-middle items-center">
+                        <AiOutlineLoading className="animate-spin" size={60} />
+                    </div>
+                )
+            }
             <Toaster />
             <div className="fixed p-auto left-3 top-4 bg-white text-black   z-50 flex flex-col justify-center align-baseline p-1 gap-2">
                 <div className="cursor-pointer transition-all relative" onClick={async () => {
@@ -191,21 +199,27 @@ export default function Home() {
                 // onEdgesChange={(changes) => {
                 //     console.log(changes)
                 // }}
-
-                onNodeDoubleClick={() => {
-                    alert()
-                }}
-
                 onNodeClick={(eve, node: nodeType) => {
                     setShowModal(false)
                     setTimeout(() => {
                         setShowModal(true)
 
                         setModalData(node)
-                    }, 100);
+                    }, 10);
 
 
                 }}
+                onNodeDoubleClick={(eve, node) => {
+
+
+                    setTimeout(() => {
+                        setShowModal(false)
+                    }, 100);
+                    navigate(`/node/${node.id}`)
+
+                }}
+
+
 
                 onNodeDragStop={async (eve, node: nodeType) => {
                     const roundNum = (num: number) => Number(num).toFixed(0)
