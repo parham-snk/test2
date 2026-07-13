@@ -6,7 +6,7 @@ import Node from "./routes/node/node";
 export default function Router(){
 
     return(
-        <BrowserRouter basename="/test2" >
+        <BrowserRouter  >
             <Routes  >
                     <Route path="/" Component={Home}/>
                     <Route path="/dashboard" Component={Dashboard}/>
