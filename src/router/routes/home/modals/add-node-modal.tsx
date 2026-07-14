@@ -1,7 +1,8 @@
 import { Node } from "@xyflow/react"
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { useFormState } from "react-dom"
 import supapabase from "../../../../supabase"
+import { useAuth } from "../AuthContext"
 
 type modal = {
 
@@ -13,7 +14,7 @@ type modal = {
 
 
 const ADD_NODE_MODAL: FC<modal> = ({ notify, data }) => {
-
+    const { user } = useAuth()!
     let actionType = data ? true : false
     console.log(actionType)
     const formAction = async (p: any, formData: FormData) => {
@@ -23,7 +24,7 @@ const ADD_NODE_MODAL: FC<modal> = ({ notify, data }) => {
         const posy = Number(formData.get("posy")).toFixed(0)
 
         async function InsertRow() {
-            const { error } = await supapabase.from("nodes").insert({ id, label, posx, posy })
+            const { error } = await supapabase.from("nodes").insert({ id, label, posx, posy, auther: user?.id })
             if (error) {
                 return notify("error", "error")
             } else {
@@ -51,10 +52,12 @@ const ADD_NODE_MODAL: FC<modal> = ({ notify, data }) => {
 
 
     async function deleteNode() {
-        const {error}=await supapabase.rpc("delete_node",{node_id:node?.id})
-        if(error) return notify("error","error");
-        notify("node deleted!","success")
+        const { error } = await supapabase.rpc("delete_node", { node_id: node?.id })
+        if (error) return notify("error", "error");
+        notify("node deleted!", "success")
     }
+
+
     return (
         <div className="bg-zinc-900 bg-opacity-70 backdrop-blur rounded shadow-xl absolute w-80 h-96  left-16 top-10 z-20">
             {

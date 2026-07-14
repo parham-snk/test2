@@ -27,8 +27,11 @@ type nodeType = {
 export default function Node_Page() {
 
     const navigate = useNavigate()
+    const {user}=useAuth()!
 
+    if(!user) navigate("/dashboard")
 
+        
     const { node_id } = useParams<{ node_id: string }>()
     const [isloading, setIsLoading] = useState<boolean>(true)
     const [nodes, setNodes] = useState([])
