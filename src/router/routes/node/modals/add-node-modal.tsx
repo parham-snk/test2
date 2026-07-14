@@ -138,7 +138,7 @@ const Add_Node_Page_Modal: FC<modal> = ({ data, notify, setShowModal }) => {
                     <> <input onClick={deleteNode} type="button" className="text-red-500 border border-red-500 rounded hover:bg-red-500 hover:text-black transition-all cursor-pointer
                 mt-16 p-1
                 " value={"delete node"} />
-                        <button type="submit" className="bg-white text-black rounded bottom-0 p-1 mt-2">create</button></>
+                        <button type="submit" className="bg-white text-black rounded bottom-0 p-1 mt-2">midify</button></>
                 }
                 {
                     !actionType &&

@@ -149,6 +149,7 @@ export default function Home() {
     }, [showModal])
     return (
         <div style={{ width: "100vw", height: "100vh" }} className="bg-zinc-800">
+            <title>home</title>
             {
                 //loading
                 isloading && (

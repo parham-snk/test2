@@ -79,13 +79,14 @@ export default function Node_Page() {
 
     const MyNode: FC<{ data: { label: string } }> = ({ data }) => {
         let direction = /\a-zA-z/.test(data.label[0])
-        return <div className={"max-w-52 rounded min-h-24 bg-zinc-900 bg-opacity-30 backdrop-blur-md text-gray-300 text-sm p-2 border border-gray-500 "}>
+        return <div className={"max-w-52 rounded  bg-zinc-900 bg-opacity-30 backdrop-blur-md text-gray-300 text-sm p-2 border border-gray-500 "}>
             <p dir={direction ? "ltr" : "rtl"} className={direction ? "text-left" : "text-right"}>{data.label}</p>
         </div>
 
     }
     return (
         <div className="bg-zinc-900 w-screen h-screen">
+            <title>{node_id}</title>
             {
                 //loading
                 isloading && (
