@@ -158,26 +158,7 @@ export default function Home() {
                 )
             }
             <Toaster />
-            <div className="fixed p-auto left-3 top-4 bg-white text-black   z-50 flex flex-col justify-center align-baseline p-1 gap-2">
-                <div className="cursor-pointer transition-all relative" onClick={async () => {
-                    const { error } = await supapabase.auth.signOut()
-                    if (error) return notify("logout failed!", "error")
-                    navigate("/dashboard")
-                }}>
-                    <div className="rotate-180 hover:scale-110 ">
-                        <IoMdExit size={20} />
-                    </div>
-                </div>
-                {
-                    //add-node
-                }
-                <div className="cursor-pointer" onClick={() => {
-                    setShowModal(!showModal)
-                }}>
-                    <AiOutlineAppstoreAdd size={20} />
-                </div>
 
-            </div>
             {
                 showModal &&
                 <ADD_NODE_MODAL notify={(msg, type: "success" | "error") => {
@@ -246,6 +227,28 @@ export default function Home() {
                 }}
                 fitView
             >
+                <Panel position="top-left">
+                    <div className="fixed p-auto left-3 top-4 bg-white text-black   z-50 flex flex-col justify-center align-baseline p-1 gap-2">
+                        <div className="cursor-pointer transition-all relative" onClick={async () => {
+                            const { error } = await supapabase.auth.signOut()
+                            if (error) return notify("logout failed!", "error")
+                            navigate("/dashboard")
+                        }}>
+                            <div className="rotate-180 hover:scale-110 ">
+                                <IoMdExit size={20} />
+                            </div>
+                        </div>
+                        {
+                            //add-node
+                        }
+                        <div className="cursor-pointer" onClick={() => {
+                            setShowModal(!showModal)
+                        }}>
+                            <AiOutlineAppstoreAdd size={20} />
+                        </div>
+
+                    </div>
+                </Panel>
                 <Background color="white" bgColor="zinc" />
                 <Controls />
 
