@@ -132,8 +132,9 @@ export default function Home() {
         setIsLoading(false)
     }
     async function getEdges() {
-        const { data, error } = await supapabase.from("edges").select("*")
-        if (error) return notify("خطا در دریافت کانکشن ها!", "error")
+        const { data, error } = await supapabase.schema("public").from("edges").select("*")
+        if (error) return notify("خطا در دریافت کانکشن ها!", "error");
+        console.log(data)
         setEdges(data)
     }
 
@@ -178,9 +179,7 @@ export default function Home() {
 
                 edges={edges}
                 onNodesChange={onNodesChange}
-                // onEdgesChange={(changes) => {
-                //     console.log(changes)
-                // }}
+                onEdgesChange={onEdgesChange}
                 onNodeClick={(eve, node: nodeType) => {
                     setShowModal(false)
                     setTimeout(() => {
@@ -212,7 +211,7 @@ export default function Home() {
 
                 }}
                 onConnect={async (connection: Connection) => {
-                    let obj = { id: `${connection.source}-${connection.target}`.toString(), source: connection.source, target: connection.target }
+                    let obj = { id: `${connection.source}-${connection.target}`.toString(), source: connection.source, target: connection.target,auther:user?.id }
                     setEdges((eds) => addEdge(connection, eds));
                     const { error } = await supapabase.from("edges").insert(obj)
                     if (error) return notify("خطا در ثبت کانکشن", "error")
