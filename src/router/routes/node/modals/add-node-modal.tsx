@@ -21,7 +21,7 @@ const Add_Node_Page_Modal: FC<modal> = ({ data, notify, setShowModal }) => {
 
 
     const { node_id } = useParams<{ node_id: string }>()
-    const userID=useAuth()?.user?.id
+    const userID = useAuth()?.user?.id
 
     let actionType = data ? true : false
 
@@ -33,7 +33,7 @@ const Add_Node_Page_Modal: FC<modal> = ({ data, notify, setShowModal }) => {
         const posy = Number(formData.get("posy")).toFixed(0)
 
         async function InsertRow() {
-            const { error } = await supapabase.schema("articles").from("nodes").insert({ parrent_id, text: label, posx, posy,auther:userID })
+            const { error } = await supapabase.schema("articles").from("nodes").insert({ parrent_id, text: label, posx, posy, auther: userID })
             if (error) {
                 return notify("error", "error")
             } else {
@@ -67,14 +67,14 @@ const Add_Node_Page_Modal: FC<modal> = ({ data, notify, setShowModal }) => {
     async function deleteNode() {
         const { error } = await supapabase.schema("articles").from("nodes").delete().eq("id", node.id)
         if (error) {
-          return  notify("error", "error")
+            return notify("error", "error")
         }
         notify("node deleted!", "success")
         setShowModal(false)
     }
-  
 
-    
+
+
 
 
 
@@ -94,7 +94,7 @@ const Add_Node_Page_Modal: FC<modal> = ({ data, notify, setShowModal }) => {
                     //parrent_id
                 }
                 <label htmlFor="parrent_id" className="py-2">parrent_id : </label>
-                <input  type="text" name="parrent_id" id="parrent_id" className="rounded  p-1  bg-transparent border border-white " value={parrent_id} onChange={(e) => {
+                <input type="text" name="parrent_id" id="parrent_id" className="rounded  p-1  bg-transparent border border-white " value={parrent_id} onChange={(e) => {
 
                     setID(e.target.value)
                 }} />
@@ -104,8 +104,9 @@ const Add_Node_Page_Modal: FC<modal> = ({ data, notify, setShowModal }) => {
                 <label htmlFor="label" className="py-2">label : </label>
                 <textarea dir={dir ? "ltr" : "rtl"} name="label" rows={10} id="label" className="rounded min-h-32 h-auto  p-2 bg-transparent border border-white " value={label}
                     onChange={e => {
-                        setDir(/\w+/.test(label))
                         setLabel(e.target.value)
+                        setDir(/\w+/.test(label[0]))
+
                     }}
                 />
                 <fieldset className="border border-white p-2 rounded pb-4 mt-5">

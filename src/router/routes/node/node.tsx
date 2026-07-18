@@ -80,7 +80,9 @@ export default function Node_Page() {
 
 
     const MyNode: FC<{ data: { label: string } }> = ({ data }) => {
-        let direction = /\a-zA-z/.test(data.label[0])
+        console.log(data.label[0])
+        let direction = /\w/.test(data.label[0].toLowerCase())
+        console.log(direction)
         return <div className={"max-w-52 rounded  bg-zinc-900 bg-opacity-30 backdrop-blur-md text-gray-300 text-sm p-2 border border-gray-500 "}>
             <p dir={direction ? "ltr" : "rtl"} className={direction ? "text-left whitespace-pre-line" : "text-right whitespace-pre-line"}>{data.label}</p>
             <Handle position={Position.Right} type="target" id={"a"}/>
