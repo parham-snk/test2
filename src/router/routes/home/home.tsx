@@ -40,28 +40,6 @@ type EdgeModal = {
 
 
 
-const INIT_nodes = [
-    {
-        id: "nodejs",
-        position: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-        data: { label: "nodejs" },
-        type: "input"
-    }, {
-        id: "react",
-        position: { x: (window.innerWidth / 2) - 300, y: (window.innerHeight / 2) },
-        data: { label: "react" },
-        type: "output"
-    }
-
-];
-
-const INIT_edges: Edge[] = [
-    {
-        id: "nodejs-react", source: "nodejs", target: "react", animated: true, type: 'smoothstep',
-        label: 'connects with',
-    }
-];
-
 
 const notify = (msg: string, icon: "error" | "success") => {
     let ico;

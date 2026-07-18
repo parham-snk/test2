@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { Controls, Background, ReactFlow, applyNodeChanges, Panel, Node, useReactFlow } from "@xyflow/react"
+import { Controls, Background, ReactFlow, applyNodeChanges, Panel, Node, useReactFlow, Handle } from "@xyflow/react"
 import "@xyflow/react/dist/style.css";
 import supapabase from "../../../supabase";
 import { notify } from "../../utilities/utilities";
@@ -10,6 +10,7 @@ import { IoMdArrowBack, IoMdExit } from "react-icons/io";
 import Add_Node_Page_Modal from "./modals/add-node-modal";
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "../home/AuthContext";
+import { Position } from "reactflow";
 
 
 
@@ -74,9 +75,7 @@ export default function Node_Page() {
         get_nodes()
     }, [])
 
-    useEffect(() => {
-        console.log(nodes)
-    }, [nodes])
+
 
 
 
@@ -84,6 +83,8 @@ export default function Node_Page() {
         let direction = /\a-zA-z/.test(data.label[0])
         return <div className={"max-w-52 rounded  bg-zinc-900 bg-opacity-30 backdrop-blur-md text-gray-300 text-sm p-2 border border-gray-500 "}>
             <p dir={direction ? "ltr" : "rtl"} className={direction ? "text-left whitespace-pre-line" : "text-right whitespace-pre-line"}>{data.label}</p>
+            <Handle position={Position.Right} type="target" id={"a"}/>
+            <Handle position={Position.Left} type="source" id={"B"}/>
         </div>
 
     }
