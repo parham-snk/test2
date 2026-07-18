@@ -1,15 +1,17 @@
 import { FC, useCallback, useEffect, useState } from "react";
+import { useAuth } from "../home/AuthContext";
+import supapabase from "../../../supabase";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { Controls, Background, ReactFlow, applyNodeChanges, Panel, Node, useReactFlow, Handle, applyEdgeChanges } from "@xyflow/react"
 import "@xyflow/react/dist/style.css";
-import supapabase from "../../../supabase";
+
 import { notify } from "../../utilities/utilities";
 
 import { AiOutlineAppstoreAdd, AiOutlineLoading } from "react-icons/ai";
 import { IoMdArrowBack, IoMdExit } from "react-icons/io";
 import Add_Node_Page_Modal from "./modals/add-node-modal";
 import { Toaster } from "react-hot-toast";
-import { useAuth } from "../home/AuthContext";
+
 import { Edge, Position } from "reactflow";
 
 
@@ -76,11 +78,10 @@ export default function Node_Page() {
 
     async function get_edges() {
         const { error, data } = await supapabase.schema("articles").from("edges").select("*")
-        console.log(error,data)
         if (error) return;
-        let s=data.map(item=>({id:item.id,source:String(item.source),target:String(item.target)}))
+        let s = data.map(item => ({ id: item.id, source: String(item.source), target: String(item.target) }))
         setEdges(s as any)
-        console.log(data)
+
     }
     useEffect(() => {
         get_nodes()
@@ -94,7 +95,7 @@ export default function Node_Page() {
     const MyNode: FC<{ data: { label: string } }> = ({ data }) => {
 
         return <div className={"max-w-52 rounded  bg-zinc-900 bg-opacity-30 backdrop-blur-md text-gray-300 text-sm p-2 border border-gray-500 "}>
-            <p dir="auto" className={"whitespace-pre-line"}>{data.label}</p>
+            <div  dir="auto" className={"whitespace-pre-line"} >{data.label}</div>
             <Handle position={Position.Right} type="target" />
             <Handle position={Position.Left} type="source" />
         </div>
@@ -153,7 +154,7 @@ export default function Node_Page() {
 
 
                     }}
-                    onEdgeClick={(eve,edge)=>console.log(edge)}
+                    onEdgeClick={(eve, edge) => console.log(edge)}
                     nodeTypes={{ custom: MyNode }}
 
                     fitView
@@ -198,6 +199,9 @@ export default function Node_Page() {
                                 }} />
                             }
                         </div>
+                    </Panel>
+                    <Panel position="top-right">
+                        <div className="bg-white text=black p-1 select-none">{node_id}</div>
                     </Panel>
                 </ReactFlow>
             }
