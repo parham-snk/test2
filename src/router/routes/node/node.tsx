@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { Controls, Background, ReactFlow, applyNodeChanges, Panel, Node, useReactFlow, Handle } from "@xyflow/react"
+import { Controls, Background, ReactFlow, applyNodeChanges, Panel, Node, useReactFlow, Handle, applyEdgeChanges } from "@xyflow/react"
 import "@xyflow/react/dist/style.css";
 import supapabase from "../../../supabase";
 import { notify } from "../../utilities/utilities";
@@ -10,7 +10,7 @@ import { IoMdArrowBack, IoMdExit } from "react-icons/io";
 import Add_Node_Page_Modal from "./modals/add-node-modal";
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "../home/AuthContext";
-import { Position } from "reactflow";
+import { Edge, Position } from "reactflow";
 
 
 
@@ -28,14 +28,16 @@ type nodeType = {
 export default function Node_Page() {
 
     const navigate = useNavigate()
-    const {user}=useAuth()!
+    const { user } = useAuth()!
 
-    if(!user) navigate("/dashboard")
+    if (!user) navigate("/dashboard")
 
-        
+
     const { node_id } = useParams<{ node_id: string }>()
     const [isloading, setIsLoading] = useState<boolean>(true)
     const [nodes, setNodes] = useState([])
+    const [edges, setEdges] = useState([])
+
 
     const [modalData, setModalData] = useState<Node | null>(null)
     const [showNodeModal, setShowNodeModal] = useState<boolean>(false)
@@ -71,8 +73,18 @@ export default function Node_Page() {
         setNodes(rows as any)
 
     }
+
+    async function get_edges() {
+        const { error, data } = await supapabase.schema("articles").from("edges").select("*")
+        console.log(error,data)
+        if (error) return;
+        let s=data.map(item=>({id:item.id,source:String(item.source),target:String(item.target)}))
+        setEdges(s as any)
+        console.log(data)
+    }
     useEffect(() => {
         get_nodes()
+        get_edges()
     }, [])
 
 
@@ -80,13 +92,11 @@ export default function Node_Page() {
 
 
     const MyNode: FC<{ data: { label: string } }> = ({ data }) => {
-        console.log(data.label[0])
-        let direction = /\w/.test(data.label[0].toLowerCase())
-        console.log(direction)
+
         return <div className={"max-w-52 rounded  bg-zinc-900 bg-opacity-30 backdrop-blur-md text-gray-300 text-sm p-2 border border-gray-500 "}>
-            <p dir={direction ? "ltr" : "rtl"} className={direction ? "text-left whitespace-pre-line" : "text-right whitespace-pre-line"}>{data.label}</p>
-            <Handle position={Position.Right} type="target" id={"a"}/>
-            <Handle position={Position.Left} type="source" id={"B"}/>
+            <p dir="auto" className={"whitespace-pre-line"}>{data.label}</p>
+            <Handle position={Position.Right} type="target" />
+            <Handle position={Position.Left} type="source" />
         </div>
 
     }
@@ -105,7 +115,11 @@ export default function Node_Page() {
             {
                 nodes &&
                 <ReactFlow
+                    onDoubleClick={(eve) => {
+                        eve.preventDefault()
+                    }}
                     nodes={nodes}
+                    edges={edges}
                     onNodesChange={async (changes) => {
                         setNodes((nds) => applyNodeChanges(changes, nds as any) as any);
 
@@ -125,7 +139,23 @@ export default function Node_Page() {
                         )
                         notify("error", "error")
                     }}
+
+                    onConnect={async (connection) => {
+                        console.log(connection)
+                        let { source, target } = connection
+                        let id = `${source}-${target}`
+                        const { error } = await supapabase.schema("articles").from("edges").insert({ id, source, target, auther: user?.id })
+                        if (error) {
+                            return notify("error", "error")
+
+                        }
+                        get_edges()
+
+
+                    }}
+                    onEdgeClick={(eve,edge)=>console.log(edge)}
                     nodeTypes={{ custom: MyNode }}
+
                     fitView
                 >
                     <Background />
@@ -158,9 +188,9 @@ export default function Node_Page() {
                                         setShowNodeModal(state)
 
                                     }
-                                }} data={modalData} notify={(msg, type) => { 
-                                    notify(msg, type) 
-                                    if(type){
+                                }} data={modalData} notify={(msg, type) => {
+                                    notify(msg, type)
+                                    if (type) {
                                         get_nodes()
                                         setShowNodeModal(false)
                                         setModalData(null)
